@@ -9,7 +9,7 @@ on:
 jobs:
   # unit tests
   units:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
     - run: npm ci
@@ -17,9 +17,9 @@ jobs:
 
   # test action works running from the graph  
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
     - uses: ./
       with:
-        milliseconds: 1000
+        name: 'iPhone 8'
