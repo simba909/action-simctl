@@ -1,23 +1,34 @@
-const wait = require('./wait');
+const simctl = require('./simctl');
+const Destination = require('./destination');
 const process = require('process');
 const cp = require('child_process');
 const path = require('path');
 
-test('throws invalid number', async() => {
-    await expect(wait('foo')).rejects.toThrow('milleseconds not a number');
+test('parses destination specifier', () => {
+  const destination = new Destination('platform=iOS,name=iPhone 8,OS=13.4');
+
+  expect(destination.platform).toEqual('iOS');
+  expect(destination.name).toEqual('iPhone 8');
+  expect(destination.os).toEqual('13.4');
 });
 
-test('wait 500 ms', async() => {
-    const start = new Date();
-    await wait(500);
-    const end = new Date();
-    var delta = Math.abs(end - start);
-    expect(delta).toBeGreaterThan(450);
+test('name only specifier matches different runtimes', () => {
+  const destination = new Destination('name=iPhone 8');
+
+  expect(destination.matchesRuntime('com.apple.CoreSimulator.SimRuntime.iOS-12-2')).toEqual(true);
+  expect(destination.matchesRuntime('com.apple.CoreSimulator.SimRuntime.iOS-13-4')).toEqual(true);
 });
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-    process.env['INPUT_MILLISECONDS'] = 500;
-    const ip = path.join(__dirname, 'index.js');
-    console.log(cp.execSync(`node ${ip}`).toString());
-})
+test('specifier with full platform matches runtime', () => {
+  const destination = new Destination('platform=iOS Simulator,name=iPhone 8');
+
+  expect(destination.matchesRuntime('com.apple.CoreSimulator.SimRuntime.iOS-12-2')).toEqual(true);
+  expect(destination.matchesRuntime('com.apple.CoreSimulator.SimRuntime.iOS-13-4')).toEqual(true);
+});
+
+test('specifier with full platform matches runtime and version', () => {
+  const destination = new Destination('platform=iOS Simulator,name=iPhone 8,OS=13.4');
+
+  expect(destination.matchesRuntime('com.apple.CoreSimulator.SimRuntime.iOS-12-2')).toEqual(false);
+  expect(destination.matchesRuntime('com.apple.CoreSimulator.SimRuntime.iOS-13-4')).toEqual(true);
+});

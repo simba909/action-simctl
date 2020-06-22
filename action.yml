@@ -1,13 +1,16 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'GitHub Action for simctl'
+description: 'A tool to interact with simctl on macOS agents'
+author: "Simon Jarbrant <simonjarbrant@me.com>"
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  platform:
+    description: 'The simulator platform (iOS, macOS, etc.)'
+    required: false
+  name:
+    description: 'The name of the simulator'
     required: true
-    default: '1000'
-outputs:
-  time: # output will be available to future steps 
-    description: 'The message to output'
+  os:
+    description: 'OS version of the simulator'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
