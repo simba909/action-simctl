@@ -41,19 +41,7 @@ exports.listSimulators = async() => {
 exports.findMatchingSimulator = async(platform, name, os) => {
   const simulators = await exports.listSimulators();
   const matchingSimulators = simulators.filter(simulator => {
-    if (simulator.name != name) {
-      return false;
-    }
-
-    if (platform.length > 0 && simulator.runtime.platform != platform) {
-      return false;
-    }
-
-    if (os.length > 0 && simulator.runtime.os != os) {
-      return false;
-    }
-
-    return true;
+    return simulator.matchesInputs(platform, name, os);
   })
   .sort((a, b) => {
     if (a.runtime.os > b.runtime.os) {

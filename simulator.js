@@ -1,3 +1,5 @@
+const semver = require('semver');
+
 class Simulator {
   constructor(rawSimulator, runtime) {
     this.udid = rawSimulator.udid;
@@ -25,6 +27,28 @@ class Simulator {
     }
 
     return parts.join(',');
+  }
+
+  matchesInputs(platform, name, os) {
+    if (this.name != name) {
+      return false;
+    }
+
+    if (platform.length > 0 && this.runtime.platform != platform) {
+      return false;
+    }
+
+    const osSemver = semver.coerce(os);
+
+    if (osSemver != undefined) {
+      const runtimeSemver = semver.coerce(this.runtime.os);
+
+      if (osSemver.compare(runtimeSemver) != 0) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
 
